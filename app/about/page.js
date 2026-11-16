@@ -20,13 +20,13 @@ const steps = [
 export default function About() {
   return (
     <main className="wrap" style={{ maxWidth: 760, paddingBottom: 64 }}>
-      <h1 style={{ fontSize: 44, margin: "36px 0 12px" }}>Regulus haqida</h1>
+      <h1 className="page-h">Regulus haqida</h1>
       <p className="lead">Regulus — özbek tilida İngliz tilini örgatadigan platforma. Maqsad — har kuni bir necha daqiqa vaqt ajratib, ketma-ket va qiziqarli örganiş.</p>
-      <h2 id="qollanma" style={{ margin: "36px 0 16px" }}>Qöllanma: qanday ishlaydi</h2>
+      <h2 id="qollanma" className="sec-h">Qöllanma: qanday işlaydi</h2>
       <ol className="steps">{steps.map(([t, d]) => <li key={t}><b>{t}</b>{d}</li>)}</ol>
-      <h2 style={{ margin: "40px 0 16px" }}>Yaratuvçilar</h2>
+      <h2 className="sec-h">Yaratuvçilar</h2>
       <div className="crew">{crew.map(([n, u, h]) => <div className="card" key={n}><h3>{n}</h3><a href={u} target="_blank" rel="noopener noreferrer">{h}</a></div>)}</div>
-      <h2 id="boglanish" style={{ margin: "40px 0 16px" }}>Biz bilan bağlaning</h2>
+      <h2 id="boglanish" className="sec-h">Biz bilan bağlaning</h2>
       <div className="card">
         <p style={{ marginTop: 0 }}>Savol, taklif yoki xato haqida yozmoqçi bölsangiz, Telegram orqali yaratuvçilarga murojaat qiling:</p>
         <ul>{crew.map(([n, u, h]) => <li key={n}>{n}: <a href={u} target="_blank" rel="noopener noreferrer">{h}</a></li>)}</ul>

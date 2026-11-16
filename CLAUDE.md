@@ -20,6 +20,12 @@ DATABASE_URL, AUTH_SECRET, APP_URL, GROQ_API_KEY, GEMINI_API_KEY (optional), BRE
 - Header numbers (hearts/streak/xp) are a client component refreshed via `/api/me` + `regulus:refresh` event, because the root layout is not re-rendered on soft navigation.
 - Auth: argon2id, httpOnly session cookie `sid`, rate limits in `rate_limits` table, math captcha + honeypot, email verification only when a mail key exists.
 
+## Design (night-sky theme + mascot)
+- Mascot: **Regi**, a lion cub with a crown and star-tipped tail (`app/components/Regi.js`, pure SVG; moods: happy, wave, cheer, sad, think, sleep, shy). Shown on landing, lesson path, player, auth forms, tutor, empty states.
+- One stylesheet: `app/globals.css` (tokens at the top; dark sky background, white chunky cards, 3D pressable buttons). Fonts are self-hosted via `@fontsource-variable/fredoka` (display) and `nunito` (body); CSP allows only `font-src 'self'`.
+- `app/components/Fx.js`: `Tilt` (pointer 3D), `Confetti`, `sfx` (WebAudio sounds, mute stored in localStorage). `Icon.js`: inline icons. `Nav.js`: top links (≥1024px) and bottom tab bar (below).
+- All motion is transform/opacity and is disabled under `prefers-reduced-motion`. The player hides the site header/footer.
+
 ## Structure
 - `lib/curriculum.js` — all content: 15 chapters × 3 lessons (8 words + 6 sentences each); exercises are generated from it (4 parts: Sözlar, Eşitish, Tarjima, Takrorlash). Lesson ids are 1..45.
 - `lib/practice.js`, `lib/review.js`, `lib/glossary.js`, `lib/mail.js`, `lib/auth.js`, `lib/security.js`

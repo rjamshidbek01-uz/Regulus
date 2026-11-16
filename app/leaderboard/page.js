@@ -19,13 +19,13 @@ export default async function Board() {
         <tbody>
           {top.map((u, i) => (
             <tr key={u.id} className={`${u.id === user.id ? "me" : ""} ${i === 0 ? "top1" : ""}`}>
-              <td>{i + 1}</td><td>{u.nickname}</td><td>🔥 {u.streak}</td><td>{u.xp}</td>
+              <td>{i < 3 ? <span className="medal" style={{ background: ["#ffbf2f", "#cfd6e6", "#e9a56b"][i] }}>{i + 1}</span> : i + 1}</td><td>{u.nickname}</td><td>🔥 {u.streak}</td><td>{u.xp}</td>
             </tr>
           ))}
           {!inTop && <tr className="me"><td>{r}</td><td>{user.nickname}</td><td>🔥 {user.streak}</td><td>{me.xp}</td></tr>}
         </tbody>
       </table>
-      <p style={{ paddingBottom: 48 }}>Guruhda 200 kişi tölsa, yangi foydalanuvçilar keyingi guruhga qöşiladi. Har guruhda reyting alohida hisoblanadi.</p>
+      <p style={{ paddingBottom: 48, color: "var(--on-sky-2)" }}>Guruhda 200 kişi tölsa, yangi foydalanuvçilar keyingi guruhga qöşiladi. Har guruhda reyting alohida hisoblanadi.</p>
     </main>
   );
 }

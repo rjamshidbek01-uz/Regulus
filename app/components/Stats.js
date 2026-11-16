@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Icon from "./Icon";
 
 // The root layout is not re-rendered on client-side navigation, so keep these numbers fresh here.
 export default function Stats({ initial }) {
@@ -17,9 +18,9 @@ export default function Stats({ initial }) {
   }, [path]);
   return (
     <>
-      <Link className="stat" href="/practice" title="Jonlar">♥ {s.hearts}</Link>
-      <span className="stat" title="Ketma-ket kunlar">🔥 {s.streak}</span>
-      <span className="stat" title="Tajriba ballari">⚡ {s.xp}</span>
+      <Link className="stat h" href="/practice" title="Jonlar" aria-label={`Jonlar: ${s.hearts}`}><Icon n="heart" />{s.hearts}</Link>
+      <span className="stat s" title="Ketma-ket kunlar" aria-label={`Ketma-ket kunlar: ${s.streak}`}><Icon n="flame" />{s.streak}</span>
+      <span className="stat x" title="Tajriba ballari" aria-label={`Ballar: ${s.xp}`}><Icon n="bolt" />{s.xp}</span>
     </>
   );
 }

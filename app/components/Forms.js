@@ -21,10 +21,10 @@ export function Forgot() {
     g ? setOk("Agar bu e-poçta bilan hisob bölsa, parolni tiklaş havolasi yuborildi. Spam papkasini ham tekşiring.") : setErr(d?.error || "Xatolik. Qayta urining.");
   }
   return (
-    <main className="form"><h1>Parolni tiklash</h1><Msg err={err} ok={ok} />
+    <main className="form"><h1>Parolni tiklaş</h1><Msg err={err} ok={ok} />
       <form onSubmit={go} className="card" noValidate>
         <Field id="fe" label="E-poçta" type="email" value={email} set={setEmail} auto="email" />
-        <button className="btn" disabled={busy}>{busy ? "…" : "Havola yuborish"}</button>
+        <button className="btn" disabled={busy}>{busy ? "…" : "Havola yuboriş"}</button>
       </form>
     </main>
   );
@@ -40,13 +40,13 @@ export function Reset({ token }) {
     setBusy(false);
     g ? setOk(true) : setErr(d?.error || "Xatolik. Qayta urining.");
   }
-  if (ok) return <main className="form"><div className="card"><h1>Tayyor!</h1><p>Parol yangilandi. Endi kirishingiz mumkin.</p><a className="btn" href="/login">Kirish</a></div></main>;
+  if (ok) return <main className="form"><div className="card"><h1>Tayyor!</h1><p>Parol yangilandi. Endi kirişingiz mumkin.</p><a className="btn" href="/login">Kiriş</a></div></main>;
   return (
     <main className="form"><h1>Yangi parol</h1><Msg err={err} />
       <form onSubmit={go} className="card" noValidate>
         <Field id="rp" label="Yangi parol" value={pw} set={setPw} auto="new-password" hint="Kamida 10 belgi" />
         <Field id="rc" label="Parolni qayta kiriting" value={cf} set={setCf} auto="new-password" />
-        <button className="btn" disabled={busy}>{busy ? "…" : "Parolni saqlash"}</button>
+        <button className="btn" disabled={busy}>{busy ? "…" : "Parolni saqlaş"}</button>
       </form>
     </main>
   );
@@ -69,18 +69,18 @@ export function ProfileForms() {
   }
   return (
     <>
-      <h2 style={{ margin: "32px 0 12px" }}>Parolni özgartirish</h2><Msg err={e1} ok={o1} />
+      <h2 style={{ margin: "32px 0 12px" }}>Parolni özgartiriş</h2><Msg err={e1} ok={o1} />
       <form onSubmit={change} className="card" noValidate>
         <Field id="pc" label="Joriy parol" value={cur} set={setCur} auto="current-password" />
         <Field id="pn" label="Yangi parol" value={pw} set={setPw} auto="new-password" hint="Kamida 10 belgi" />
         <Field id="pf" label="Yangi parolni qayta kiriting" value={cf} set={setCf} auto="new-password" />
-        <button className="btn">Saqlash</button>
+        <button className="btn">Saqlaş</button>
       </form>
-      <h2 style={{ margin: "32px 0 12px" }}>Hisobni öçirish</h2><Msg err={e2} />
+      <h2 style={{ margin: "32px 0 12px" }}>Hisobni öçiriş</h2><Msg err={e2} />
       <form onSubmit={del} className="card" noValidate>
-        <p style={{ marginTop: 0 }}>Bu amalni qaytarib bölmaydi: darslar, lugat va ballaringiz öçadi.</p>
+        <p style={{ marginTop: 0 }}>Bu amalni qaytarib bölmaydi: darslar, luğat va ballaringiz öçadi.</p>
         <Field id="dp" label="Parolni kiriting" value={dp} set={setDp} auto="current-password" />
-        <button className="btn" style={{ background: "var(--pome)", color: "#fff" }}>Hisobni öçirish</button>
+        <button className="btn red">Hisobni öçiriş</button>
       </form>
     </>
   );

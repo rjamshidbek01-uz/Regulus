@@ -2,8 +2,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Md from "./Md";
+import Regi from "./Regi";
+import Icon from "./Icon";
+import { Confetti, sfx, soundOff, setSoundOff } from "./Fx";
 
-const NAMES = ["Sözlar", "Eşitish", "Tarjima", "Takrorlash"];
+const NAMES = ["Sözlar", "Eşitiş", "Tarjima", "Takrorlaş"];
+const PRAISE = ["Töğri!", "Barakalla!", "Zör!", "Ajoyib!", "Juda yaxşi!"];
+const CHEER = ["Notöğri", "Hali emas", "Yana urinib köramiz"];
 const isListen = (e) => e.type === "listen" || e.type === "listenpick";
 const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 const prep = (e) => {
@@ -41,18 +46,24 @@ export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, 
   const [fb, setFb] = useState(null);
   const [end, setEnd] = useState(null);
   const [ai, setAi] = useState(null);
+  const [quiet, setQuiet] = useState(false);
   const resRef = useRef([]);
   const single = !!(practice || review);
   const G = gloss || {};
 
   useEffect(() => {
     const l = !practice && muted() ? exercises.filter((e) => !isListen(e)) : exercises;
-    setList(l); setP(l.map(prep));
+    setList(l); setP(l.map(prep)); setQuiet(soundOff());
   }, [exercises, practice]);
-  useEffect(() => { if (end) window.dispatchEvent(new Event("regulus:refresh")); }, [end]);
+  useEffect(() => {
+    if (!end) return;
+    window.dispatchEvent(new Event("regulus:refresh"));
+    if (!end.fail && !end.error && end.pass !== false) sfx("win");
+  }, [end]);
   if (!list) return null;
   const ex = list[i], d = ex?.data, p = P[i];
   const reset = () => { setFb(null); setSel(null); setBuilt([]); setLeft(null); setDone([]); setBad(null); setAi(null); };
+  const result = (r) => { sfx(r.ok ? "good" : "bad"); setFb({ ...r, word: (r.ok ? PRAISE : CHEER)[Math.floor(Math.random() * (r.ok ? PRAISE : CHEER).length)] }); };
 
   // returns true when the run is over (no lives / too many mistakes)
   function miss(en) {
@@ -82,18 +93,18 @@ export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, 
   function check() {
     let ok, correct;
     const mc0 = ex.type === "choice" || ex.type === "listenpick";
-    if (ex.type === "choice" || ex.type === "listenpick") { ok = sel === d.answer; correct = d.options[d.answer]; }
+    if (mc0) { ok = sel === d.answer; correct = d.options[d.answer]; }
     else { ok = built.length > 0 && built.map((k) => p.words.find((w) => w.k === k).t).join(" ") === d.answer.join(" "); correct = d.answer.join(" "); }
     if (review) resRef.current.push({ w: d.word, ok });
     if (!ok) miss(d.word);
     const answer = mc0 ? d.options[sel] : built.map((k) => p.words.find((w) => w.k === k).t).join(" ");
-    setFb({ ok, correct, answer });
+    result({ ok, correct, answer });
   }
   async function explain() {
     setAi({ loading: true });
     const r = await post("/api/ai", { mode: "explain", question: String(d.question || d.source || d.text || "").slice(0, 300), answer: String(fb.answer || "").slice(0, 300), correct: String(fb.correct).slice(0, 300) });
     const j = r?.ok ? await r.json().catch(() => null) : null;
-    setAi({ text: j?.text || "AI hozircha javob bera olmadi." });
+    setAi({ text: j?.text || "AI hozirça javob bera olmadi." });
   }
   async function next() {
     if (dead) return setEnd(practice ? { practice: true, pass: false } : { fail: true });
@@ -111,59 +122,72 @@ export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, 
   function pick(side, k) {
     if (side === "L") return setLeft(k);
     if (left === null || done.includes(k)) return;
-    if (left === k) { const nd = [...done, k]; setDone(nd); setLeft(null); if (nd.length === d.pairs.length) setFb({ ok: true, correct: "" }); }
-    else { const over = miss(d.pairs[left][0]); setBad(`${left}-${k}`); setLeft(null); setTimeout(() => setBad(null), 500); if (over) setFb({ ok: false, correct: "" }); }
+    if (left === k) { const nd = [...done, k]; setDone(nd); setLeft(null); if (nd.length === d.pairs.length) result({ ok: true, correct: "" }); else sfx("tap"); }
+    else { const over = miss(d.pairs[left][0]); sfx("bad"); setBad(`${left}-${k}`); setLeft(null); setTimeout(() => setBad(null), 500); if (over) setFb({ ok: false, correct: "", word: CHEER[0] }); }
   }
 
-  if (end) return (
-    <div className="lesson"><div className="end">
-      {end.fail ? <><h1>Jonlar tugadi</h1><p className="lead">Bugungi jonlaringiz tugadi. Ertaga yangi 5 ta jon beriladi, yoki hoziroq bölim sinovini topshiring: 85% aniqlik — +3 jon.</p><div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}><a className="btn" href="/practice">Sinov topshirish</a><a className="btn alt" href="/learn">Darslarga</a></div></>
-      : end.practice ? (end.pass
-        ? <><h1>Sinovdan öttingiz!</h1><p className="lead">+3 jon. Hozir jonlaringiz: ♥ {end.hearts}</p><a className="btn" href="/learn">Darslarga qaytish</a></>
-        : <><h1>Bu safar bölmadi</h1><p className="lead">85% aniqlik kerak edi. Qayta urinib körin.</p><div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}><a className="btn" href={`/practice/${practice.n}`}>Qayta urinish</a><a className="btn alt" href="/practice">Bölimlar</a></div></>)
-      : end.review ? <><h1>Takrorlash tugadi!</h1><p className="lead">+{end.xp} ball · {end.words} ta söz takrorlandi.</p><div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}><a className="btn" href="/review">Takrorlash</a><a className="btn alt" href="/learn">Darslarga</a></div></>
-      : end.error ? <><h1>Saqlanmadi</h1><p className="lead">İnternetni tekşirib, qayta urining.</p><Link className="btn" href="/learn">Darslarga</Link></>
-      : <><h1>Dars tugadi!</h1><p className="lead">+{end.xp} ball · {end.words} ta söz luğatingizda.</p><div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}><a className="btn" href="/learn">Davom etish</a><a className="btn alt" href="/dictionary">Luğatim</a></div></>}
-    </div></div>
-  );
+  if (end) {
+    const win = !end.fail && !end.error && end.pass !== false;
+    return (
+      <div className="lesson"><div className="end">
+        {win && <Confetti />}
+        <Regi mood={end.fail ? "sleep" : end.error ? "think" : win ? "cheer" : "sad"} size={170} />
+        {end.fail ? <><h1>Jonlar tugadi</h1><p className="lead">Regi biroz dam oladi. Ertaga yangi 5 ta jon beriladi, yoki hoziroq bölim sinovini topşiring: 85% aniqlik — +3 jon.</p><div className="row c"><a className="btn" href="/practice">Sinov topşiriş</a><a className="btn alt" href="/learn">Darslarga</a></div></>
+        : end.practice ? (end.pass
+          ? <><h1>Sinovdan öttingiz!</h1><div className="reward"><div style={{ "--c": "#ff8fa3", "--cd": "#d9566f" }}><b>+3</b>jon</div><div style={{ "--c": "var(--gold)", "--cd": "var(--gold-d)" }}><b>♥ {end.hearts}</b>jami jon</div></div><a className="btn big" href="/learn">Darslarga qaytiş</a></>
+          : <><h1>Bu safar bölmadi</h1><p className="lead">85% aniqlik kerak edi. Xafa bölmang, yana bir urinib köring!</p><div className="row c"><a className="btn" href={`/practice/${practice.n}`}>Qayta uriniş</a><a className="btn alt" href="/practice">Bölimlar</a></div></>)
+        : end.review ? <><h1>Takrorlaş tugadi!</h1><div className="reward"><div style={{ "--c": "var(--gold)", "--cd": "var(--gold-d)" }}><b>+{end.xp}</b>ball</div><div style={{ "--c": "var(--turq)", "--cd": "var(--turq-d)" }}><b>{end.words}</b>ta söz</div></div><div className="row c"><a className="btn" href="/review">Takrorlaş</a><a className="btn alt" href="/learn">Darslarga</a></div></>
+        : end.error ? <><h1>Saqlanmadi</h1><p className="lead">İnternetni tekşirib, qayta urinib köring.</p><Link className="btn" href="/learn">Darslarga</Link></>
+        : <><h1>Dars tugadi!</h1><div className="reward"><div style={{ "--c": "var(--gold)", "--cd": "var(--gold-d)" }}><b>+{end.xp}</b>ball</div><div style={{ "--c": "var(--turq)", "--cd": "var(--turq-d)" }}><b>{end.words}</b>ta söz luğatda</div></div><div className="row c"><a className="btn big" href="/learn">Davom etiş</a><a className="btn big alt" href="/dictionary">Luğatim</a></div></>}
+      </div></div>
+    );
+  }
 
   const cur = ex.part;
   const segs = single ? [1] : [1, 2, 3, 4];
-  const seg = (n) => { const tot = list.filter((e) => single || e.part === n).length; const dn = list.filter((e, k) => (single || e.part === n) && k < i).length; return tot ? (dn / tot) * 100 : 0; };
+  const seg = (n) => { const tot = list.filter((e) => single || e.part === n).length; const dn = list.filter((e, k) => (single || e.part === n) && k < i).length + (fb && (single || n === cur) ? 1 : 0); return tot ? Math.min(1, dn / tot) : 0; };
   const mc = ex.type === "choice" || ex.type === "listenpick";
   const ready = mc ? sel !== null : built.length > 0;
+  const mood = fb ? (fb.ok ? "cheer" : "sad") : isListen(ex) ? "happy" : "think";
+  const optCls = (o) => fb ? (o === d.answer ? "right" : o === sel ? "wrong" : "") : sel === o ? "sel" : "";
   return (
     <div className="lesson">
       <div className="top">
-        <Link href={practice ? "/practice" : review ? "/review" : "/learn"} aria-label="Çiqish">✕</Link>
+        <Link className="icon-btn" href={practice ? "/practice" : review ? "/review" : "/learn"} aria-label="Çiqiş"><Icon n="x" size={22} /></Link>
         <div className="segs" style={single ? { gridTemplateColumns: "1fr" } : undefined} role="progressbar" aria-valuenow={i} aria-valuemax={list.length}>
-          {segs.map((n) => <div key={n} className={`seg ${!single && n === cur ? "cur" : ""}`}><i style={{ width: `${seg(n)}%` }} /></div>)}
+          {segs.map((n) => <div key={n} className={`seg ${!single && n === cur ? "cur" : ""}`}><i style={{ "--p": seg(n) }} /></div>)}
         </div>
-        {review ? <span className="lives">{i + 1}/{list.length}</span> : practice ? <span className="lives" aria-label="Xatolar">Xato {Math.min(mist, practice.allowed)}/{practice.allowed}</span> : <span className="lives" aria-label={`${hearts} jon`}>♥ {hearts}</span>}
+        <button className="icon-btn" aria-label={quiet ? "Ovozni yoqiş" : "Ovozni öçiriş"} aria-pressed={quiet} onClick={() => { setSoundOff(!quiet); setQuiet(!quiet); }}><Icon n={quiet ? "mute" : "sound"} size={22} /></button>
+        {review ? <span className="lives">{i + 1}/{list.length}</span> : practice ? <span className="lives" aria-label="Xatolar">Xato {Math.min(mist, practice.allowed)}/{practice.allowed}</span> : <span key={hearts} className={`lives ${hearts < h0 ? "hit" : ""}`} aria-label={`${hearts} jon`}><Icon n="heart" />{hearts}</span>}
       </div>
-      <div className="partname">{review ? "Takrorlash" : practice ? `${practice.n}-bölim sinovi · ${i + 1}/${list.length}` : `${cur}-qism · ${NAMES[cur - 1]}`}</div>
-      <div className="q"><small>{d.prompt}</small>{d.question && <h2><Hov s={d.question} G={G} /></h2>}{d.source && <h2><Hov s={d.source} G={G} /></h2>}</div>
+      <div className="partname">{review ? "Takrorlaş" : practice ? `${practice.n}-bölim sinovi · ${i + 1}/${list.length}` : `${cur}-qism · ${NAMES[cur - 1]}`}</div>
+      <div className="q" key={`q${i}`}>
+        <Regi mood={mood} size={84} />
+        <div className="bubble"><small>{d.prompt}</small>{d.question && <h2><Hov s={d.question} G={G} /></h2>}{d.source && <h2><Hov s={d.source} G={G} /></h2>}</div>
+      </div>
 
-      {isListen(ex) && <button className="btn alt say" onClick={() => say(d.text)}>🔊 Tinglash</button>}
+      <div className="body" key={`b${i}`}>
+        {isListen(ex) && <button className="btn blue say" onClick={() => say(d.text)}><Icon n="sound" size={22} />Tinglaş</button>}
 
-      {mc && <div className="opts">{p.opts.map((o) => <button key={o.o} className={`opt ${sel === o.o ? "sel" : ""}`} disabled={!!fb} onClick={() => setSel(o.o)}>{o.t}</button>)}</div>}
+        {mc && <div className="opts">{p.opts.map((o) => <button key={o.o} className={`opt ${optCls(o.o)}`} disabled={!!fb} onClick={() => { setSel(o.o); sfx("tap"); }}>{o.t}</button>)}</div>}
 
-      {ex.type === "match" && <div className="pairs">
-        <div>{p.L.map((o) => <button key={o.k} className={`opt ${done.includes(o.k) ? "done" : left === o.k ? "sel" : ""}`} disabled={done.includes(o.k) || !!fb} onClick={() => { pick("L", o.k); say(o.t); }}>{o.t}</button>)}</div>
-        <div>{p.R.map((o) => <button key={o.k} className={`opt ${done.includes(o.k) ? "done" : bad?.endsWith(`-${o.k}`) ? "badf" : ""}`} disabled={done.includes(o.k) || !!fb} onClick={() => pick("R", o.k)}>{o.t}</button>)}</div>
-      </div>}
+        {ex.type === "match" && <div className="pairs">
+          <div>{p.L.map((o) => <button key={o.k} className={`opt ${done.includes(o.k) ? "done" : left === o.k ? "sel" : ""}`} disabled={done.includes(o.k) || !!fb} onClick={() => { pick("L", o.k); say(o.t); }}>{o.t}</button>)}</div>
+          <div>{p.R.map((o) => <button key={o.k} className={`opt ${done.includes(o.k) ? "done" : bad?.endsWith(`-${o.k}`) ? "badf" : ""}`} disabled={done.includes(o.k) || !!fb} onClick={() => pick("R", o.k)}>{o.t}</button>)}</div>
+        </div>}
 
-      {(ex.type === "build" || ex.type === "listen") && <>
-        <div className="ans" aria-label="Javob">{built.map((k) => { const w = p.words.find((x) => x.k === k); return <button key={k} className="chip" disabled={!!fb} onClick={() => setBuilt(built.filter((x) => x !== k))}>{w.t}</button>; })}</div>
-        <div className="chips">{p.words.map((w) => <button key={w.k} className="chip" disabled={built.includes(w.k) || !!fb} onClick={() => setBuilt([...built, w.k])}>{w.t}</button>)}</div>
-      </>}
+        {(ex.type === "build" || ex.type === "listen") && <>
+          <div className="ans" aria-label="Javob">{built.map((k) => { const w = p.words.find((x) => x.k === k); return <button key={k} className="chip" disabled={!!fb} onClick={() => setBuilt(built.filter((x) => x !== k))}>{w.t}</button>; })}</div>
+          <div className="chips">{p.words.map((w) => <button key={w.k} className="chip" disabled={built.includes(w.k) || !!fb} onClick={() => { setBuilt([...built, w.k]); sfx("tap"); }}>{w.t}</button>)}</div>
+        </>}
 
-      {isListen(ex) && !fb && <div><button className="skip" onClick={skipListening}>Hozir tinglay olmayman</button></div>}
+        {isListen(ex) && !fb && <div><button className="skip" onClick={skipListening}>Hozir tinglay olmayman</button></div>}
+      </div>
 
       <div className={`foot ${fb ? (fb.ok ? "good" : "bad") : ""}`}><div className="row">
-        {fb ? <><div><b>{fb.ok ? "Töğri!" : "Notöğri"}</b>{!fb.ok && fb.correct && <div>Javob: {fb.correct}</div>}{!fb.ok && fb.correct && !ai && <button className="skip" style={{ marginTop: 4 }} onClick={explain}>AI tushuntirsin</button>}</div><button className="btn blue" onClick={next}>Davom</button></>
-        : ex.type === "match" ? <span /> : <><span /><button className="btn" disabled={!ready} onClick={check}>Tekşirish</button></>}
-      </div>{ai && <div className="aibox">{ai.loading ? "…" : <Md text={ai.text} />}</div>}</div>
+        {fb ? <><div className="fb"><div><b>{fb.word}</b>{!fb.ok && fb.correct && <div>Javob: {fb.correct}</div>}{!fb.ok && fb.correct && !ai && <button className="skip" onClick={explain}>AI tuşuntirsin</button>}</div></div><button className={`btn ${fb.ok ? "green" : "red"}`} onClick={next} autoFocus>Davom</button></>
+        : ex.type === "match" ? <span style={{ minHeight: 50 }} /> : <><span /><button className="btn" disabled={!ready} onClick={check}>Tekşiriş</button></>}
+      </div>{ai && <div className="aibox">{ai.loading ? <span className="dots"><i /><i /><i /></span> : <Md text={ai.text} />}</div>}</div>
     </div>
   );
 }
