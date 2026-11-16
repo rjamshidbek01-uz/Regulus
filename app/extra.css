@@ -1,0 +1,45 @@
+.segs{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg{height:14px;border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}.seg i{display:block;height:100%;background:var(--turq);transition:width .3s}
+.seg.cur{box-shadow:0 0 0 2px var(--saffron)}
+.partname{margin-top:10px;font-weight:800;color:var(--lapis)}
+.skip{background:none;border:0;font:800 15px "Nunito Sans";color:var(--lapis);text-decoration:underline;cursor:pointer;padding:8px 0;margin-top:12px}
+.lv{display:inline-block;font:800 13px "Nunito Sans";background:var(--saffron);color:var(--ink);border:2px solid var(--ink);border-radius:8px;padding:0 8px;margin-right:8px;vertical-align:middle}
+.board{width:100%;border-collapse:separate;border-spacing:0 8px}
+.board td,.board th{padding:10px 14px;text-align:left}
+.board th{font-weight:800;color:#52627a;font-size:15px}
+.board td{background:#fff;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.board td:first-child{border-left:2px solid var(--ink);border-radius:var(--r) 0 0 var(--r);font:800 20px "Bricolage Grotesque";width:64px}
+.board td:last-child{border-right:2px solid var(--ink);border-radius:0 var(--r) var(--r) 0;text-align:right;font-weight:800}
+.board tr.me td{background:#dbe5ff}
+.board tr.top1 td:first-child{color:var(--pome)}
+.steps{counter-reset:s;display:grid;gap:14px;padding:0;list-style:none}
+.steps li{counter-increment:s;background:#fff;border:2px solid var(--ink);border-radius:var(--r);padding:14px 18px 14px 64px;position:relative}
+.steps li:before{content:counter(s);position:absolute;left:14px;top:12px;width:36px;height:36px;display:grid;place-items:center;background:var(--saffron);border:2px solid var(--ink);border-radius:50%;font:800 18px "Bricolage Grotesque"}
+.steps b{display:block}
+.crew{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.crew .card h3{font-size:22px;margin-bottom:8px}
+@media(max-width:720px){.crew{grid-template-columns:1fr}}
+.eyebrow{display:inline-block;font:800 15px "Nunito Sans";letter-spacing:.16em;text-transform:uppercase;background:var(--ink);color:var(--saffron);padding:4px 14px;border-radius:999px;margin:0 0 16px}
+.chap{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.aibox{max-width:640px;margin:12px auto 0;padding:10px 14px;background:#fff;border:2px solid var(--ink);border-radius:var(--r);font-weight:600;white-space:pre-wrap}
+.chat{display:flex;flex-direction:column;gap:10px;min-height:280px;max-height:55vh;overflow:auto;padding:4px 2px}
+.bub{max-width:85%;padding:10px 14px;border:2px solid var(--ink);border-radius:var(--r);white-space:pre-wrap}
+.bub.bot{background:#fff;align-self:flex-start}.bub.me{background:var(--saffron);align-self:flex-end;font-weight:600}
+.nav .wrap{max-width:1240px;gap:14px}
+.nav a.l{font-size:16px}
+.stat{white-space:nowrap}
+body{min-height:100vh;display:flex;flex-direction:column}
+.site-footer{margin-top:auto;background:var(--ink);color:#fff;padding:40px 0 20px}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px}
+.flogo{font:800 26px "Bricolage Grotesque",sans-serif;color:var(--saffron);margin-bottom:8px}
+.site-footer p{margin:0;max-width:34ch;opacity:.85}
+.site-footer h4{margin:0 0 10px;font:800 14px "Nunito Sans";letter-spacing:.14em;text-transform:uppercase;color:var(--saffron)}
+.site-footer nav a{display:block;color:#fff;padding:4px 0;text-decoration:none;font-weight:600}
+.site-footer nav a:hover{color:var(--saffron);text-decoration:underline}
+.fcopy{margin-top:28px;padding-top:16px;border-top:1px solid rgba(255,255,255,.2);font-size:14px;opacity:.7}
+body:has(.lesson) .site-footer{display:none}
+@media(max-width:720px){.fgrid{grid-template-columns:1fr}}
+.tip{position:relative;cursor:help;border-bottom:2px dotted var(--lapis)}
+.tip::after{content:attr(data-t);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);background:var(--ink);color:#fff;padding:4px 10px;border-radius:8px;font:700 14px/1.3 "Nunito Sans",sans-serif;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:40}
+.tip:hover::after,.tip:focus::after{opacity:1}
+#qollanma,#boglanish{scroll-margin-top:20px}

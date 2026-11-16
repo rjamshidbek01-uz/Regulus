@@ -1,0 +1,86 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800&display=swap");
+:root{--ink:#14213d;--lapis:#1d3fa0;--turq:#12a8a0;--saffron:#ffb52e;--pome:#d63a52;--mist:#edf2f7;--paper:#fff;--r:14px;
+--star:polygon(50% 0%,61% 19%,85% 15%,81% 39%,100% 50%,81% 61%,85% 85%,61% 81%,50% 100%,39% 81%,15% 85%,19% 61%,0% 50%,19% 39%,15% 15%,39% 19%)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--mist);color:var(--ink);font:400 17px/1.55 "Nunito Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;margin:0;letter-spacing:-.02em}
+a{color:var(--lapis)}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.nav{background:var(--paper);border-bottom:2px solid var(--ink)}
+.nav .wrap{display:flex;align-items:center;gap:20px;min-height:64px;flex-wrap:wrap}
+.logo{font:800 22px "Bricolage Grotesque",sans-serif;color:var(--ink);text-decoration:none;display:flex;gap:10px;align-items:center}
+.logo i{width:28px;height:28px;background:var(--ink);clip-path:var(--star);position:relative;display:block}
+.logo i:after{content:"";position:absolute;inset:3px;background:var(--saffron);clip-path:var(--star)}
+.nav a.l{color:var(--ink);text-decoration:none;font-weight:800;padding:6px 2px;border-bottom:3px solid transparent}
+.nav a.l:hover{border-color:var(--turq)}
+.sp{flex:1}
+.stat{font-weight:800;display:flex;gap:6px;align-items:center}
+.btn{display:inline-block;font:800 17px "Nunito Sans",sans-serif;color:var(--ink);background:var(--saffron);border:2px solid var(--ink);border-radius:var(--r);padding:11px 22px;box-shadow:4px 4px 0 var(--ink);cursor:pointer;text-decoration:none;transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.btn.alt{background:var(--paper)}.btn.blue{background:var(--lapis);color:#fff}.btn.sm{padding:6px 14px;font-size:15px;box-shadow:3px 3px 0 var(--ink)}
+.btn[disabled]{background:#cfd8e3;color:#6b7a90;box-shadow:none;cursor:not-allowed;transform:none}
+.card{background:var(--paper);border:2px solid var(--ink);border-radius:var(--r);padding:24px;box-shadow:6px 6px 0 var(--ink)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:56px 0}
+.hero h1{font-size:clamp(38px,6vw,64px);font-weight:800}
+.hero p{font-size:19px;max-width:46ch}
+.hero .row{display:flex;gap:16px;flex-wrap:wrap;margin-top:28px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.star{aspect-ratio:1;background:var(--ink);clip-path:var(--star);position:relative;display:grid;place-items:center}
+.star>span{position:absolute;inset:4px;clip-path:var(--star);display:grid;place-items:center;font:800 15px "Bricolage Grotesque",sans-serif;color:#fff;text-align:center;line-height:1.05;padding:18%}
+.c1>span{background:var(--lapis)}.c2>span{background:var(--turq)}.c3>span{background:var(--saffron);color:var(--ink)}.c4>span{background:var(--pome)}.c0>span{background:#cfd8e3;color:#6b7a90}
+.tiles .star{animation:pop .6s both}
+.tiles .star:nth-child(2){animation-delay:.08s}.tiles .star:nth-child(3){animation-delay:.16s}.tiles .star:nth-child(4){animation-delay:.24s}.tiles .star:nth-child(5){animation-delay:.32s}.tiles .star:nth-child(6){animation-delay:.4s}.tiles .star:nth-child(7){animation-delay:.48s}.tiles .star:nth-child(8){animation-delay:.56s}.tiles .star:nth-child(9){animation-delay:.64s}
+@keyframes pop{from{transform:scale(.3) rotate(-45deg);opacity:0}}
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding-bottom:64px}
+.feats h3{font-size:22px;margin-bottom:6px}
+.form{max-width:440px;margin:48px auto;padding:0 20px}
+.form h1{font-size:36px;margin-bottom:20px}
+.f{margin-bottom:16px}.f label{display:block;font-weight:800;margin-bottom:4px}
+.f input{width:100%;font:inherit;padding:11px 12px;border:2px solid var(--ink);border-radius:10px;background:#fff}
+.f small{color:#52627a}
+.err{background:#fde8ec;border:2px solid var(--pome);border-radius:10px;padding:10px 12px;margin-bottom:16px;font-weight:600}
+.ok{background:#dff6f4;border:2px solid var(--turq);border-radius:10px;padding:10px 12px;margin-bottom:16px;font-weight:600}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}
+.unit{margin:36px 0 8px;background:var(--lapis);color:#fff;border:2px solid var(--ink);border-radius:var(--r);padding:16px 20px;box-shadow:5px 5px 0 var(--ink)}
+.unit h2{font-size:26px}.unit p{margin:4px 0 0;opacity:.92;font-size:16px}
+.path{display:flex;flex-direction:column;align-items:center;gap:18px;padding:22px 0;position:relative}
+.path:before{content:"";position:absolute;top:0;bottom:0;left:50%;border-left:4px dotted #9fb0c6;transform:translateX(-2px)}
+.node{position:relative;width:104px;text-decoration:none;display:block}
+.node .star>span{font-size:13px}
+.node em{display:block;text-align:center;font:800 15px "Nunito Sans";color:var(--ink);background:var(--mist);position:relative;margin-top:2px}
+.node.locked{pointer-events:none}
+.dict-head{display:flex;gap:16px;flex-wrap:wrap;align-items:end;margin:32px 0 16px}
+.dict-head h1{font-size:40px;flex:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.stats .card{padding:14px 18px;box-shadow:4px 4px 0 var(--ink)}.stats b{font:800 32px "Bricolage Grotesque"}
+.search{width:100%;max-width:320px;font:inherit;padding:10px 12px;border:2px solid var(--ink);border-radius:10px}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding-bottom:48px}
+.w{background:#fff;border:2px solid var(--ink);border-radius:var(--r);padding:14px 16px;display:grid;gap:4px}
+.w b{font:800 22px "Bricolage Grotesque"}
+.bar{height:8px;border:2px solid var(--ink);border-radius:6px;background:#fff;overflow:hidden}.bar i{display:block;height:100%;background:var(--turq)}
+.lesson{max-width:640px;margin:0 auto;padding:20px;min-height:100vh;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:14px}
+.prog{flex:1;height:14px;border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}.prog i{display:block;height:100%;background:var(--turq);transition:width .3s}
+.lives{font-weight:800;color:var(--pome)}
+.q{margin:32px 0 20px}.q small{color:#52627a;font-weight:800}.q h2{font-size:34px;margin-top:6px}
+.opts{display:grid;gap:12px}
+.opt{font:800 18px "Nunito Sans";text-align:left;padding:14px 16px;border:2px solid var(--ink);border-radius:var(--r);background:#fff;cursor:pointer}
+.opt.sel{background:#dbe5ff;box-shadow:inset 0 0 0 2px var(--lapis)}
+.opt.done{background:#dff6f4;border-color:var(--turq);opacity:.6}
+.ans{min-height:58px;border-bottom:3px solid var(--ink);display:flex;gap:8px;flex-wrap:wrap;padding:6px 0;margin-bottom:20px}
+.chips{display:flex;gap:10px;flex-wrap:wrap}
+.chip{font:800 17px "Nunito Sans";padding:8px 14px;border:2px solid var(--ink);border-radius:10px;background:#fff;box-shadow:3px 3px 0 var(--ink);cursor:pointer}
+.chip[disabled]{opacity:.3;box-shadow:none}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pairs div{display:grid;gap:12px;align-content:start}
+.say{margin-bottom:16px}
+.foot{margin-top:auto;padding:18px 20px;margin-left:-20px;margin-right:-20px;border-top:2px solid var(--ink);background:#fff}
+.foot.good{background:#dff6f4}.foot.bad{background:#fde8ec}
+.foot .row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:640px;margin:0 auto;padding:0 20px}
+.end{text-align:center;margin:auto;padding:30px 0}.end h1{font-size:44px;margin-bottom:12px}
+@media(max-width:720px){.hero{grid-template-columns:1fr;padding:32px 0}.feats{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr 1fr}.stats b{font-size:24px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.opt.badf{background:#fde8ec;border-color:var(--pome)}
+.lead{font-size:20px}
