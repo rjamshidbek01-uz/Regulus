@@ -6,7 +6,7 @@ const crew = [
   ["Shohjahon Habibullayev", "https://t.me/Fangtastic_2011", "@Fangtastic_2011"],
 ];
 const steps = [
-  ["Bölim va dars tanlang", "Darslar bölimlarga bölingan. Har bölimda 3 ta dars bor va ular ketma-ket oçiladi."],
+  ["Yulduzlar xaritasi", "Kurs 80 ta bölimdan iborat (A1 dan B2 gaça). Har bir bölim — xaritadagi sayyora: unda 3 ta dars va bölim sinovi bor. Darslar ketma-ket oçiladi, sözlarni esa oldindan körib, tinglab olişingiz mumkin."],
   ["Har dars 4 qismdan iborat", "Sözlar, Eşitish, Tarjima va Takrorlash. Har qismda yangi mashqlar keladi, takror bölmaydi."],
   ["Söz tarjimasini körish", "İngliz tilidagi söz ustiga sichqoncha kursorini olib boring (telefonda söz ustiga bosing): tarjimasi körinadi. Tarjima söz luğatdagi asosiy shaklida beriladi (masalan, drinks — içmoq), gapdagi qöşimçali shaklida emas."],
   ["Jonlar", "Har kuni 5 ta jon beriladi. Xato qilsangiz bittadan kamayadi. Jonlar tugasa, bölim sinovini (85% aniqlik) topshirib 3 ta jon olasiz yoki ertasi kunni kutasiz."],

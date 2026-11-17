@@ -14,5 +14,5 @@ export default async function PracticeRun({ params }) {
   const [{ m }] = await sql`select coalesce(max(lesson_id),0)::int m from lesson_progress where user_id=${user.id}`;
   if ((n - 1) * PER + 1 > m) redirect("/practice");
   const ex = buildPractice(n);
-  return <Player lessonId={0} exercises={ex} gloss={glossFor(ex)} practice={{ n, token: signPractice(user.id, n), allowed: PRACTICE_MAX_MISTAKES }} />;
+  return <Player lessonId={0} exercises={ex} gloss={glossFor(ex)} practice={{ n, token: signPractice(user.id, n), allowed: PRACTICE_MAX_MISTAKES }} back={`/learn/bolim/${n}`} />;
 }

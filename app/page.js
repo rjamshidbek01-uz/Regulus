@@ -4,6 +4,7 @@ import { currentUser } from "../lib/auth";
 import Regi from "./components/Regi";
 import Icon from "./components/Icon";
 import { Tilt } from "./components/Fx";
+import { UNITS, TOTAL, WORD_COUNT } from "../lib/curriculum";
 
 const sats = [["Hello", "#fff", "#c6cee6"], ["Salom", "#ffbf2f", "#d88c00"], ["Star", "#17c3b2", "#0c8f83"], ["Yulduz", "#fff", "#c6cee6"], ["Friend", "#ff8fa3", "#d9566f"], ["Döst", "#ffbf2f", "#d88c00"]];
 const feats = [
@@ -21,6 +22,7 @@ export default async function Welcome() {
           <p className="eyebrow">Regulus</p>
           <h1>İngliz tilini <b>özbek tilida</b> örganing</h1>
           <p>Har kuni bir neça daqiqa. Qisqa darslar, eşitib yoziş, juft topiş va öz luğatingiz. Yoningizda esa doim döstingiz — şerça Regi.</p>
+          <ul className="hstats"><li><b>{UNITS.length}</b>bölim</li><li><b>{TOTAL}</b>dars</li><li><b>{Math.floor(WORD_COUNT / 100) * 100}+</b>söz</li><li><b>A1–B2</b>daraja</li></ul>
           <div className="row">
             <Link className="btn big" href="/register">Bepul boşlaş</Link>
             <Link className="btn big alt" href="/login">Hisobim bor</Link>
