@@ -482,3 +482,9 @@ body:has(.lesson) .helpfab,body:has(.lesson) .helpbox{display:none}
 .lex svg{grid-row:span 2;color:var(--lapis-d)}.lex b{font:700 18px/1.2 var(--body)}.lex span{font-size:13px;color:var(--muted)}
 .q h2.glyph{font:700 64px/1.1 var(--body);letter-spacing:.04em}
 @media(max-width:767.98px){.letters{grid-template-columns:1fr 1fr}.letter .lg{font-size:36px;min-height:70px}.abc-card{flex-wrap:wrap}}
+.tip.open::after{opacity:1}
+.tip:hover,.tip.open{background:rgba(84,104,255,.12);border-radius:4px}
+.hintnote{display:block;margin-top:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.trline{font-weight:800;margin-top:2px}
+.intro-words{margin-bottom:8px}
+.foot .row>span{color:var(--on-sky-2);font-weight:700}

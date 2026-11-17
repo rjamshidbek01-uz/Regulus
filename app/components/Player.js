@@ -13,6 +13,7 @@ const isListen = (e) => e.type === "listen" || e.type === "listenpick";
 const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 const prep = (e) => {
   const d = e.data;
+  if (e.type === "intro") return {};
   if (e.type === "choice" || e.type === "listenpick") return { opts: shuffle(d.options.map((t, o) => ({ t, o }))) };
   if (e.type === "match") return { L: shuffle(d.pairs.map((p, k) => ({ t: p[0], k }))), R: shuffle(d.pairs.map((p, k) => ({ t: p[1], k }))) };
   return { words: shuffle(d.words.map((t, k) => ({ t, k }))) };
@@ -20,11 +21,26 @@ const prep = (e) => {
 const say = (t, lang = "en-US") => { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = lang; u.rate = .9; speechSynthesis.speak(u); } catch {} };
 const muted = () => { try { return Number(localStorage.getItem("nolisten") || 0) > Date.now(); } catch { return false; } };
 const clean = (t) => t.toLowerCase().replace(/[.,!?;:]/g, "");
-function Hov({ s, G }) {
+// Hint on a word: shows its translation on hover, keyboard focus, or a tap (phones).
+const tap = (e) => { const el = e.currentTarget, on = !el.classList.contains("open"); document.querySelectorAll(".tip.open").forEach((x) => x.classList.remove("open")); if (on) el.classList.add("open"); };
+function Tip({ t, v }) { return <span className="tip" tabIndex={0} role="button" aria-label={`${t}: ${v}`} data-t={v} onClick={tap}>{t}</span>; }
+function Hov({ s, G, uz }) {
   if (!s) return null;
-  const whole = G[clean(s)];
-  if (whole) return <span className="tip" tabIndex={0} data-t={whole}>{s}</span>;
-  return s.split(" ").map((t, i, a) => { const v = G[clean(t)]; return <span key={i}>{v ? <span className="tip" tabIndex={0} data-t={v}>{t}</span> : t}{i < a.length - 1 ? " " : ""}</span>; });
+  const p = uz ? "uz:" : "", whole = G[p + clean(s)];
+  if (whole && s.includes(" ")) return <Tip t={s} v={whole} />;
+  return s.split(" ").map((t, i, a) => { const v = G[p + clean(t)]; return <span key={i}>{v ? <Tip t={t} v={v} /> : t}{i < a.length - 1 ? " " : ""}</span>; });
+}
+const hasHint = (s, G, uz) => !!s && s.split(" ").concat(s).some((t) => G[(uz ? "uz:" : "") + clean(t)]);
+// What the learner should take away from an exercise: the word or sentence with its translation.
+function lesson(ex) {
+  const d = ex.data;
+  if (ex.type === "build") return `${d.source} — ${d.answer.join(" ")}`;
+  if (ex.type === "listen") return d.tr ? `${d.text} — ${d.tr}` : "";
+  if ((ex.type === "choice" || ex.type === "listenpick") && d.word) {
+    const other = d.question && d.question !== d.word ? d.question : d.options[d.answer];
+    return other && other !== d.word ? `${d.word} — ${other}` : "";
+  }
+  return "";
 }
 const post = (url, body) => fetch(url, { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) }).catch(() => null);
 
@@ -167,10 +183,11 @@ export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, 
       <div className="partname">{drill ? drill.title : review ? "Takrorlaş" : practice ? `${practice.n}-bölim sinovi · ${i + 1}/${list.length}` : `${cur}-qism · ${NAMES[cur - 1]}`}</div>
       <div className="q" key={`q${i}`}>
         <Regi mood={mood} size={84} />
-        <div className="bubble"><small>{d.prompt}</small>{d.question && <h2 dir="auto" className={d.big ? "glyph" : ""}><Hov s={d.question} G={G} /></h2>}{d.source && <h2 dir="auto"><Hov s={d.source} G={G} /></h2>}</div>
+        <div className="bubble"><small>{d.prompt}</small>{d.question && <h2 dir="auto" className={d.big ? "glyph" : ""}><Hov s={d.question} G={G} /></h2>}{d.source && <h2 dir="auto"><Hov s={d.source} G={G} uz={d.from === "uz"} /></h2>}{!fb && (hasHint(d.question, G) || hasHint(d.source, G, d.from === "uz")) && <span className="hintnote">💡 Tagiga çizilgan sözni bosing — tarjimasi çiqadi</span>}</div>
       </div>
 
       <div className="body" key={`b${i}`}>
+        {ex.type === "intro" && <ul className="wprev intro-words">{d.words.map((w) => <li key={w.en}><button type="button" onClick={() => say(w.en, L)} aria-label={`${w.en} — ${w.uz}. Tinglaş`}><Icon n="sound" size={16} /><b dir="auto">{w.en}</b><span>{w.uz}</span></button></li>)}</ul>}
         {isListen(ex) && <button className="btn blue say" onClick={() => say(d.text, L)}><Icon n="sound" size={22} />Tinglaş</button>}
 
         {mc && <div className="opts" dir="auto">{p.opts.map((o) => <button dir="auto" key={o.o} className={`opt ${optCls(o.o)}`} disabled={!!fb} onClick={() => { setSel(o.o); sfx("tap"); }}>{o.t}</button>)}</div>}
@@ -189,8 +206,8 @@ export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, 
       </div>
 
       <div className={`foot ${fb ? (fb.ok ? "good" : "bad") : ""}`}><div className="row">
-        {fb ? <><div className="fb"><div><b>{fb.word}</b>{!fb.ok && fb.correct && <div>Javob: {fb.correct}</div>}{!fb.ok && fb.correct && !ai && <button className="skip" onClick={explain}>AI tuşuntirsin</button>}</div></div><button className={`btn ${fb.ok ? "green" : "red"}`} onClick={next} autoFocus>Davom</button></>
-        : ex.type === "match" ? <span style={{ minHeight: 50 }} /> : <><span /><button className="btn" disabled={!ready} onClick={check}>Tekşiriş</button></>}
+        {fb ? <><div className="fb"><div><b>{fb.word}</b>{lesson(ex) && <div className="trline" dir="auto">{lesson(ex)}</div>}{!fb.ok && fb.correct && !lesson(ex) && <div>Javob: {fb.correct}</div>}{!fb.ok && fb.correct && !ai && <button className="skip" onClick={explain}>AI tuşuntirsin</button>}</div></div><button className={`btn ${fb.ok ? "green" : "red"}`} onClick={next} autoFocus>Davom</button></>
+        : ex.type === "intro" ? <><span>Sözlarni bosib tinglang</span><button className="btn" onClick={next}>Boşladik</button></> : ex.type === "match" ? <span style={{ minHeight: 50 }} /> : <><span /><button className="btn" disabled={!ready} onClick={check}>Tekşiriş</button></>}
       </div>{ai && <div className="aibox">{ai.loading ? <span className="dots"><i /><i /><i /></span> : <Md text={ai.text} />}</div>}</div>
     </div>
   );

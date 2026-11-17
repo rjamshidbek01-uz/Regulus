@@ -56,7 +56,7 @@ for (const C of Object.values(COURSES)) {
       }
     });
   });
-  for (let id = 1; id <= C.TOTAL; id++) if (C.buildExercises(id).length !== 16) errs.push(`lesson ${id}: exercises could not be generated`);
+  for (let id = 1; id <= C.TOTAL; id++) if (C.buildExercises(id).length !== 17) errs.push(`lesson ${id}: exercises could not be generated`);
   if (C.alphabet) {
     const n = C.alphabet.groups.reduce((a, g) => a + g.l.length, 0);
     const sounds = new Set(C.alphabet.groups.flatMap((g) => g.l.map((x) => x.g)));

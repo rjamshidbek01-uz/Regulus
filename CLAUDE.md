@@ -14,7 +14,7 @@ DATABASE_URL, AUTH_SECRET, APP_URL, GROQ_API_KEY, GEMINI_API_KEY (optional), BRE
 ## Hard rules / decisions
 - All Uzbek text uses the **Turkish-style Latin alphabet**: o'→ö, g'→ğ, sh→ş, ch→ç, capital I at word start → İ (e.g. Luğatim, İngliz tili). Say "ingliz tili", never "inglizça"; formal register ("siz").
 - AI answers: full explanation first, then "Misollar:" with `*English* — Uzbek`; no parentheses translations; server converts output to the Turkish-style alphabet (`toTurk` in `app/api/ai/route.js`).
-- Hover hints (dictionary form) only on the QUESTION text, never on answer choices (`lib/glossary.js`).
+- Translations for beginners: every lesson starts with an "intro" card showing all 8 new words (translation + audio); after every answered exercise the footer shows the word/sentence with its translation. Hints (dictionary form) appear on hover, focus or tap, only on the QUESTION text — target-language text gets Uzbek hints, Uzbek sentences to translate get target-language hints (with simple suffix matching and fixed pronoun hints) — never on answer choices, chips or pairs (`lib/glossary.js`).
 - Lives: 5 per day (reset at midnight Asia/Tashkent), −1 per mistake (server-side `/api/lives/lose`); at 0 lives lessons are blocked; chapter practice test (20 questions, ≤3 mistakes = 85%) gives +3 lives.
 - Streak counts any active day (visiting while logged in); computed in `currentUser()` in `lib/auth.js`.
 - Header numbers (hearts/streak/xp) are a client component refreshed via `/api/me` + `regulus:refresh` event, because the root layout is not re-rendered on soft navigation.
