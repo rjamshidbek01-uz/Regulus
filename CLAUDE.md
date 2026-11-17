@@ -27,7 +27,8 @@ DATABASE_URL, AUTH_SECRET, APP_URL, GROQ_API_KEY, GEMINI_API_KEY (optional), BRE
 - All motion is transform/opacity and is disabled under `prefers-reduced-motion`. The player hides the site header/footer.
 
 ## Structure
-- `lib/curriculum.js` — all content: 15 chapters × 3 lessons (8 words + 6 sentences each); exercises are generated from it (4 parts: Sözlar, Eşitish, Tarjima, Takrorlash). Lesson ids are 1..45.
+- `lib/curriculum.js` — content engine + the original 15 chapters; extra chapters live in `lib/units/{a1,a2,b1,b2}.js` and are appended after them (80 chapters × 3 lessons = 240 lessons, 8 words + 6 sentences each). Lesson ids are positional (1..240) and stored in `lesson_progress`, so **never reorder or remove chapters — only append**. Exercises are generated (4 parts: Sözlar, Eşitish, Tarjima, Takrorlash).
+- Learn UI: `/learn` = mission card + "Yulduzlar xaritasi" (4 galaxies of 20 chapters, `WORLDS` in curriculum.js; `MapView`, `Planet`); `/learn/bolim/[n]` = chapter page (Regi tip, `Constellation` of 3 lessons + test, word previews with audio, lesson buttons).
 - `lib/practice.js`, `lib/review.js`, `lib/glossary.js`, `lib/mail.js`, `lib/auth.js`, `lib/security.js`
 - `app/components/Player.js` — the lesson/practice/review player
 - Leaderboard groups of 200 (`users.group_no`), About page with creators/tutorial, footer in `app/layout.js`

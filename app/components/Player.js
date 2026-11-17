@@ -28,7 +28,7 @@ function Hov({ s, G }) {
 }
 const post = (url, body) => fetch(url, { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) }).catch(() => null);
 
-export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, review, gloss }) {
+export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, review, gloss, back, next: nextId }) {
   const [list, setList] = useState(null);
   const [P, setP] = useState(null);
   const [i, setI] = useState(0);
@@ -138,7 +138,7 @@ export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, 
           : <><h1>Bu safar bölmadi</h1><p className="lead">85% aniqlik kerak edi. Xafa bölmang, yana bir urinib köring!</p><div className="row c"><a className="btn" href={`/practice/${practice.n}`}>Qayta uriniş</a><a className="btn alt" href="/practice">Bölimlar</a></div></>)
         : end.review ? <><h1>Takrorlaş tugadi!</h1><div className="reward"><div style={{ "--c": "var(--gold)", "--cd": "var(--gold-d)" }}><b>+{end.xp}</b>ball</div><div style={{ "--c": "var(--turq)", "--cd": "var(--turq-d)" }}><b>{end.words}</b>ta söz</div></div><div className="row c"><a className="btn" href="/review">Takrorlaş</a><a className="btn alt" href="/learn">Darslarga</a></div></>
         : end.error ? <><h1>Saqlanmadi</h1><p className="lead">İnternetni tekşirib, qayta urinib köring.</p><Link className="btn" href="/learn">Darslarga</Link></>
-        : <><h1>Dars tugadi!</h1><div className="reward"><div style={{ "--c": "var(--gold)", "--cd": "var(--gold-d)" }}><b>+{end.xp}</b>ball</div><div style={{ "--c": "var(--turq)", "--cd": "var(--turq-d)" }}><b>{end.words}</b>ta söz luğatda</div></div><div className="row c"><a className="btn big" href="/learn">Davom etiş</a><a className="btn big alt" href="/dictionary">Luğatim</a></div></>}
+        : <><h1>Dars tugadi!</h1><div className="reward"><div style={{ "--c": "var(--gold)", "--cd": "var(--gold-d)" }}><b>+{end.xp}</b>ball</div><div style={{ "--c": "var(--turq)", "--cd": "var(--turq-d)" }}><b>{end.words}</b>ta söz luğatda</div></div><div className="row c">{nextId ? <a className="btn big" href={`/learn/${nextId}`}>Keyingi dars</a> : <a className="btn big" href="/learn">Xaritaga</a>}<a className="btn big alt" href={back || "/learn"}>Bölimga qaytiş</a></div></>}
       </div></div>
     );
   }
@@ -153,7 +153,7 @@ export default function Player({ lessonId, exercises, hearts: h0 = 5, practice, 
   return (
     <div className="lesson">
       <div className="top">
-        <Link className="icon-btn" href={practice ? "/practice" : review ? "/review" : "/learn"} aria-label="Çiqiş"><Icon n="x" size={22} /></Link>
+        <Link className="icon-btn" href={back || (practice ? "/practice" : review ? "/review" : "/learn")} aria-label="Çiqiş"><Icon n="x" size={22} /></Link>
         <div className="segs" style={single ? { gridTemplateColumns: "1fr" } : undefined} role="progressbar" aria-valuenow={i} aria-valuemax={list.length}>
           {segs.map((n) => <div key={n} className={`seg ${!single && n === cur ? "cur" : ""}`}><i style={{ "--p": seg(n) }} /></div>)}
         </div>

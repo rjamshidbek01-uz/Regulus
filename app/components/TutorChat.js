@@ -3,8 +3,8 @@ import { useRef, useEffect, useState } from "react";
 import Md from "./Md";
 import Regi from "./Regi";
 
-const HI = "Salom! Men Regi — sizning AI ustozingizman. İngliz tili haqida istalgan savol bering: grammatika, söz ma'nosi yoki tarjima.";
-const IDEAS = ["«a» va «an» farqi nima?", "Past Simple qanday yasaladi?", "«How are you?» ga qanday javob beriladi?"];
+const HI = "Salom! Men Regi — sizning AI ustozingizman. İngliz tili haqida istalgan savol bering: grammatika, söz maʼnosi yoki tarjima. Regulus saytidan foydalaniş böyiça ham yordam beraman.";
+const IDEAS = ["«a» va «an» farqi nima?", "Past Simple qanday yasaladi?", "Jonlar tugasa nima qilaman?"];
 export default function TutorChat() {
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");

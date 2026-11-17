@@ -6,6 +6,7 @@ import { currentUser } from "../lib/auth";
 import LogoutButton from "./components/LogoutButton";
 import Stats from "./components/Stats";
 import { NavLinks, TabBar } from "./components/Nav";
+import HelpBubble from "./components/HelpBubble";
 
 export const metadata = { title: "Regulus — İngliz tilini özbek tilida örganing", description: "İngliz tilini özbek tilida, kiçik darslar bilan örganing." };
 export const viewport = { width: "device-width", initialScale: 1, themeColor: "#0b1034" };
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }) {
           )}
         </div><div className="wrap fcopy">© 2026 Regulus. Barça huquqlar himoyalangan.</div></footer>
         {u && <TabBar />}
+        <HelpBubble loggedIn={!!u} />
       </body>
     </html>
   );

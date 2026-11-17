@@ -16,6 +16,7 @@ export default function AuthForm({ mode, notice }) {
   const [shy, setShy] = useState(false);
   const pwEv = { onFocus: () => setShy(true), onBlur: () => setShy(false) };
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  const help = (q) => window.dispatchEvent(new CustomEvent("regulus:help", { detail: { q } }));
   const loadCap = () => reg && fetch("/api/captcha").then((r) => r.json()).then(setCap).catch(() => {});
   useEffect(() => { loadCap(); }, []);
 
@@ -48,10 +49,10 @@ export default function AuthForm({ mode, notice }) {
       <div className="peek"><Regi mood={shy ? "shy" : err ? "sad" : "happy"} size={130} head /></div>
       {notice === "1" && <div className="ok">E-poçta tasdiqlandi. Endi kirişingiz mumkin.</div>}
       {notice === "0" && <div className="err">Havola yaroqsiz yoki muddati tugagan.</div>}
-      {err && <div className="err" role="alert">{err}{unv && <div style={{ marginTop: 8 }}><button type="button" className="btn alt sm" onClick={resend}>Xatni qayta yuboriş</button></div>}</div>}
+      {err && <div className="err" role="alert">{err}{unv && <div className="row" style={{ marginTop: 8, gap: 8 }}><button type="button" className="btn alt sm" onClick={resend}>Xatni qayta yuboriş</button><button type="button" className="btn alt sm" onClick={() => help("noletter")}>Xat kelmadimi?</button></div>}</div>}
       {note && <div className="ok">{note}</div>}
       <form onSubmit={submit} className="card" noValidate>
-        <div className="f"><label htmlFor="email">{reg ? "E-poçta" : "E-poçta yoki taxallus"}</label><input id="email" type={reg ? "email" : "text"} autoComplete={reg ? "email" : "username"} required value={f.email} onChange={set("email")} /></div>
+        <div className="f"><label htmlFor="email">{reg ? "E-poçta" : "E-poçta yoki taxallus"}</label><input id="email" type={reg ? "email" : "text"} autoComplete={reg ? "email" : "username"} required value={f.email} onChange={set("email")} />{reg && <small>E-poçtangizni bilmaysizmi? <button type="button" className="linkbtn" onClick={() => help("email")}>Qanday topiş mumkin</button> · <button type="button" className="linkbtn" onClick={() => help("noemail")}>E-poçtam yöq</button></small>}</div>
         {reg && <div className="f"><label htmlFor="nick">Taxallus</label><input id="nick" autoComplete="username" required minLength={3} maxLength={20} value={f.nickname} onChange={set("nickname")} /><small>3–20 belgi: harf, raqam yoki _</small></div>}
         <div className="f"><label htmlFor="pw">Parol</label><input id="pw" type="password" autoComplete={reg ? "new-password" : "current-password"} required minLength={reg ? 10 : 1} value={f.password} onChange={set("password")} {...pwEv} />{reg && <small>Kamida 10 belgi</small>}</div>
         {reg && <div className="f"><label htmlFor="cf">Parolni qayta kiriting</label><input id="cf" type="password" autoComplete="new-password" required value={f.confirm} onChange={set("confirm")} {...pwEv} /></div>}
@@ -59,6 +60,7 @@ export default function AuthForm({ mode, notice }) {
         {reg && <div className="hp" aria-hidden="true"><label>Website<input tabIndex={-1} autoComplete="off" value={f.website} onChange={set("website")} /></label></div>}
         <button className="btn" disabled={busy}>{busy ? "…" : reg ? "Hisob yaratiş" : "Kiriş"}</button>
       </form>
+      <button type="button" className="helpline" onClick={() => help(reg ? "signup" : "login")}><Regi mood="wave" size={44} head /><span><b>{reg ? "Röyxatdan ötişni bilmayapsizmi?" : "Kirişni bilmayapsizmi?"}</b>Regidan yordam oling — bosqiçma-bosqiç tuşuntiraman</span></button>
       <p>{reg ? <>Hisobingiz bormi? <a href="/login">Kiriş</a></> : <>Hisobingiz yöqmi? <a href="/register">Röyxatdan ötiş</a></>}</p>
     </main>
   );
