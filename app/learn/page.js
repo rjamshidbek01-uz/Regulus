@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { sql } from "../../lib/db";
 import { currentUser } from "../../lib/auth";
-import { UNITS, PER, TOTAL, WORLDS, chapterOf } from "../../lib/curriculum";
+import { courseFor, visibleCourses } from "../../lib/courses";
 import Regi from "../components/Regi";
 import Planet from "../components/Planet";
 import MapView from "../components/MapView";
@@ -21,7 +21,9 @@ function Ring({ value, total }) {
 export default async function Learn() {
   const user = await currentUser();
   if (!user) redirect("/login");
-  const rows = await sql`select lesson_id from lesson_progress where user_id=${user.id}`;
+  const C = courseFor(user), UNITS = C.units, PER = C.PER, TOTAL = C.TOTAL, WORLDS = C.worlds, chapterOf = C.chapterOf;
+  const many = visibleCourses(user).length > 1;
+  const rows = await sql`select lesson_id from lesson_progress where user_id=${user.id} and course=${C.code}`;
   const done = new Set(rows.map((r) => r.lesson_id));
   let next = null;
   for (let id = 1; id <= TOTAL; id++) if (!done.has(id) && (id === 1 || done.has(id - 1))) { next = id; break; }
@@ -45,6 +47,7 @@ export default async function Learn() {
       <section className="mission">
         <Regi mood={out ? "sleep" : all ? "cheer" : "wave"} size={128} className="m-regi" />
         <div className="m-body">
+          {many && <Link className="course-chip" href="/courses">{C.name} · tilni almaştiriş</Link>}
           <p className="eyebrow">{out ? "Jonlar tugadi" : all ? "Barça bölimlar tugadi" : done.size ? "Keyingi missiya" : "Birinçi missiya"}</p>
           <h1>{out ? "Regi biroz dam olyapti" : all ? `Barakalla, ${user.nickname}!` : `Salom, ${user.nickname}!`}</h1>
           {out ? <p>Ertaga yangi 5 ta jon beriladi. Hoziroq davom etiş uçun bölim sinovini topşiring: 85% aniqlik — +3 jon.</p>
@@ -59,9 +62,17 @@ export default async function Learn() {
         <Ring value={done.size} total={TOTAL} />
       </section>
 
+      {C.alphabet && (
+        <Link className="abc-card" href="/alphabet">
+          <span className="abc-glyph" dir={C.dir} aria-hidden="true">{C.alphabet.groups[0].l.slice(0, 3).map((x) => x.g.split(" ")[0]).join(" ")}</span>
+          <span><b>{C.alphabet.title}</b>Darslardan oldin harflarni örganing: har bir harf, uning tovuşi va misol söz.</span>
+          <span className="btn sm">Oçiş</span>
+        </Link>
+      )}
+
       <div className="map-h">
         <h2>Yulduzlar xaritasi</h2>
-        <p>{UNITS.length} ta bölim — {UNITS.length} ta sayyora. Har birida 3 ta dars va bitta sinov. Sayyorani bosing va sözlarni oldindan köring.</p>
+        <p>{C.name}: {UNITS.length} ta bölim — {UNITS.length} ta sayyora. Har birida 3 ta dars va bitta sinov. Sayyorani bosing va sözlarni oldindan köring.</p>
       </div>
       <MapView worlds={worlds} chapters={chapters} start={start} />
     </main>

@@ -3,9 +3,10 @@ import { useRef, useEffect, useState } from "react";
 import Md from "./Md";
 import Regi from "./Regi";
 
-const HI = "Salom! Men Regi — sizning AI ustozingizman. İngliz tili haqida istalgan savol bering: grammatika, söz maʼnosi yoki tarjima. Regulus saytidan foydalaniş böyiça ham yordam beraman.";
-const IDEAS = ["«a» va «an» farqi nima?", "Past Simple qanday yasaladi?", "Jonlar tugasa nima qilaman?"];
-export default function TutorChat() {
+const hi = (name) => `Salom! Men Regi — sizning AI ustozingizman. ${name} haqida istalgan savol bering: grammatika, söz maʼnosi yoki tarjima. Regulus saytidan foydalaniş böyiça ham yordam beraman.`;
+const IDEAS = { en: ["«a» va «an» farqi nima?", "Past Simple qanday yasaladi?", "Jonlar tugasa nima qilaman?"] };
+const ideas = (code, name) => IDEAS[code] || [`${name}da «rahmat» qanday aytiladi?`, `${name}da salomlaşiş qanday?`, "Jonlar tugasa nima qilaman?"];
+export default function TutorChat({ name = "İngliz tili", code = "en" }) {
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -29,12 +30,12 @@ export default function TutorChat() {
     <main className="wrap" style={{ maxWidth: 720, paddingBottom: 40 }}>
       <h1 className="page-h">AI ustoz</h1>
       <div className="chat">
-        <Bot>{HI}</Bot>
+        <Bot>{hi(name)}</Bot>
         {msgs.map((m, i) => m.role === "user" ? <div key={i} className="msg me"><div className="bub me">{m.content}</div></div> : <Bot key={i}><Md text={m.content} /></Bot>)}
         {busy && <Bot><span className="dots" aria-label="Yozmoqda"><i /><i /><i /></span></Bot>}
         <div ref={end} />
       </div>
-      {!msgs.length && <div className="row" style={{ marginTop: 6 }}>{IDEAS.map((q) => <button key={q} className="btn alt sm" onClick={() => ask(q)}>{q}</button>)}</div>}
+      {!msgs.length && <div className="row" style={{ marginTop: 6 }}>{ideas(code, name).map((q) => <button key={q} className="btn alt sm" onClick={() => ask(q)}>{q}</button>)}</div>}
       {err && <div className="err" role="alert" style={{ marginTop: 12 }}>{err}</div>}
       <form className="ask" onSubmit={(e) => { e.preventDefault(); ask(text); }}>
         <input className="search" placeholder="Savolingizni yozing…" aria-label="Savol" maxLength={600} value={text} onChange={(e) => setText(e.target.value)} />

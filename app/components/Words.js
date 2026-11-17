@@ -2,10 +2,10 @@
 import { useState } from "react";
 import Regi from "./Regi";
 import Icon from "./Icon";
-const say = (t) => { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = .9; speechSynthesis.speak(u); } catch {} };
+const say = (t, lang = "en-US") => { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = lang; u.rate = .9; speechSynthesis.speak(u); } catch {} };
 const level = (r) => Math.max(0, Math.min(100, Math.round(((r.c - r.w) / 4) * 100)));
 
-export default function Words({ rows }) {
+export default function Words({ rows, lang, dir }) {
   const [q, setQ] = useState("");
   const [by, setBy] = useState("new");
   const s = q.trim().toLowerCase();
@@ -37,7 +37,7 @@ export default function Words({ rows }) {
         ? <div className="card empty"><h2>Heç narsa topilmadi</h2><p>«{q}» böyiça söz yöq.</p><button className="btn alt" onClick={() => setQ("")}>Qidiruvni tozalaş</button></div>
         : <div className="words">{list.map((r) => (
           <div className="w" key={r.en}>
-            <b>{r.en} <button className="icon-btn" style={{ background: "#eef0ff", color: "var(--lapis-d)" }} aria-label={`${r.en} talaffuzi`} onClick={() => say(r.en)}><Icon n="sound" size={22} /></button></b>
+            <b><span dir={dir}>{r.en}</span> <button className="icon-btn" style={{ background: "#eef0ff", color: "var(--lapis-d)" }} aria-label={`${r.en} talaffuzi`} onClick={() => say(r.en, lang)}><Icon n="sound" size={22} /></button></b>
             <span>{r.uz}</span>
             <div className="bar" aria-label={`Bilim darajasi ${level(r)}%`}><i style={{ width: `${level(r)}%` }} /></div>
             <small>{r.at}</small>

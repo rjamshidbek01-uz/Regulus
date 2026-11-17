@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { sql } from "../../../../lib/db";
 import { currentUser } from "../../../../lib/auth";
-import { UNITS, PER, lessonWords } from "../../../../lib/curriculum";
+import { courseFor } from "../../../../lib/courses";
 import { PRACTICE_N } from "../../../../lib/practice";
 import Regi from "../../../components/Regi";
 import Planet from "../../../components/Planet";
@@ -10,20 +10,18 @@ import Constellation from "../../../components/Constellation";
 import WordPreview from "../../../components/WordPreview";
 import Icon from "../../../components/Icon";
 
-const num = async (params) => { const n = Number.parseInt((await params).n, 10); return n >= 1 && n <= UNITS.length ? n : null; };
-export async function generateMetadata({ params }) {
-  const n = await num(params);
-  return { title: n ? `${n}-bölim: ${UNITS[n - 1].t} — Regulus` : "Regulus" };
-}
+const num = async (params, C) => { const n = Number.parseInt((await params).n, 10); return n >= 1 && n <= C.units.length ? n : null; };
+export const metadata = { title: "Bölim — Regulus" };
 const LABEL = { done: "Tugatildi", open: "Oçiq", locked: "Yopiq" };
 
 export default async function Chapter({ params }) {
   const user = await currentUser();
   if (!user) redirect("/login");
-  const n = await num(params);
+  const C = courseFor(user), UNITS = C.units, PER = C.PER, lessonWords = C.lessonWords;
+  const n = await num(params, C);
   if (!n) notFound();
   const u = UNITS[n - 1], first = (n - 1) * PER + 1;
-  const rows = await sql`select lesson_id from lesson_progress where user_id=${user.id}`;
+  const rows = await sql`select lesson_id from lesson_progress where user_id=${user.id} and course=${C.code}`;
   const done = new Set(rows.map((r) => r.lesson_id));
   const m = rows.reduce((a, r) => Math.max(a, r.lesson_id), 0);
   const lessons = u.l.map((l, k) => {
@@ -68,7 +66,7 @@ export default async function Chapter({ params }) {
               <span className={`tag ${l.state}`}>{LABEL[l.state]}</span>
             </div>
             <p className="lc-sub">Bu darsda örganadigan sözlar — bosib tinglang:</p>
-            <WordPreview words={l.words} />
+            <WordPreview words={l.words} lang={C.speech} dir={C.dir} />
             <div className="lc-f">
               {l.state === "locked" ? <span className="lockmsg"><Icon n="lock" size={18} />Avval oldingi darsni tugating</span>
                 : out ? <Link className="btn" href="/practice">Jonlar tugadi — sinov topşiring</Link>

@@ -4,12 +4,14 @@ import { currentUser } from "../../../lib/auth";
 import { buildReview } from "../../../lib/review";
 import { glossFor } from "../../../lib/glossary";
 import Player from "../../components/Player";
+import { courseFor, courseInfo } from "../../../lib/courses";
 
 export default async function ReviewRun() {
   const user = await currentUser();
   if (!user) redirect("/login");
-  const rows = await sql`select word_en,word_uz from dictionary where user_id=${user.id} order by (wrong_count>0) desc, (next_review<=now()) desc, next_review asc limit 10`;
+  const C = courseFor(user);
+  const rows = await sql`select word_en,word_uz from dictionary where user_id=${user.id} and course=${C.code} order by (wrong_count>0) desc, (next_review<=now()) desc, next_review asc limit 10`;
   if (!rows.length) redirect("/review");
-  const ex = buildReview(rows);
-  return <Player lessonId={0} exercises={ex} gloss={glossFor(ex)} review />;
+  const ex = buildReview(rows, C);
+  return <Player lessonId={0} exercises={ex} gloss={glossFor(ex, C)} course={courseInfo(C)} review />;
 }

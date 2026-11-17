@@ -3,12 +3,14 @@ import { redirect } from "next/navigation";
 import { sql } from "../../lib/db";
 import { currentUser } from "../../lib/auth";
 import Regi from "../components/Regi";
+import { courseFor } from "../../lib/courses";
 export const metadata = { title: "Takrorlaş — Regulus" };
 
 export default async function Review() {
   const user = await currentUser();
   if (!user) redirect("/login");
-  const rows = await sql`select word_en en,word_uz uz,wrong_count w,(next_review<=now()) due from dictionary where user_id=${user.id} order by wrong_count desc, learned_at desc`;
+  const C = courseFor(user);
+  const rows = await sql`select word_en en,word_uz uz,wrong_count w,(next_review<=now()) due from dictionary where user_id=${user.id} and course=${C.code} order by wrong_count desc, learned_at desc`;
   const mistakes = rows.filter((r) => r.w > 0);
   const due = rows.filter((r) => r.due).length;
   return (

@@ -2,14 +2,15 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { sql } from "../../lib/db";
 import { currentUser } from "../../lib/auth";
-import { UNITS, PER } from "../../lib/curriculum";
+import { courseFor } from "../../lib/courses";
 import { PRACTICE_N, PRACTICE_MAX_MISTAKES } from "../../lib/practice";
 export const metadata = { title: "Sinov — Regulus" };
 
 export default async function Practice() {
   const user = await currentUser();
   if (!user) redirect("/login");
-  const [{ m }] = await sql`select coalesce(max(lesson_id),0)::int m from lesson_progress where user_id=${user.id}`;
+  const C = courseFor(user), UNITS = C.units, PER = C.PER;
+  const [{ m }] = await sql`select coalesce(max(lesson_id),0)::int m from lesson_progress where user_id=${user.id} and course=${C.code}`;
   return (
     <main className="wrap" style={{ maxWidth: 640, paddingBottom: 56 }}>
       <h1 className="page-h">Bölim sinovi</h1>
